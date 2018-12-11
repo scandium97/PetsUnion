@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 import service.ShopService;
-import tools.StaticPara;
+import tools.StaticPara.LoginRegisterPara;
 
 @WebServlet(name = "ShopLoginServlet")
 public class ShopLoginServlet extends HttpServlet {
@@ -29,15 +29,15 @@ public class ShopLoginServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String name = request.getParameter("name");
+        String id = request.getParameter("id");
         String password = request.getParameter("password");
         String returnPath = request.getParameter("returnPath");
-        int result = ShopService.loginCheck(name, password);
+        int result = ShopService.loginCheck(id, password);
 
-        if (result == StaticPara.success) {
+        if (result == LoginRegisterPara.success) {
 
             HttpSession session = request.getSession();
-            session.setAttribute("logged", name);
+            session.setAttribute("logged", id);
 
             if (returnPath != null) {
                 request.getRequestDispatcher(returnPath).forward(request, response);
@@ -45,10 +45,11 @@ public class ShopLoginServlet extends HttpServlet {
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
             }
 
-        } else if (result == StaticPara.loginWrongPassword || result == StaticPara.invalid) {
+        } else if (result == LoginRegisterPara.loginWrongPassword
+                || result == LoginRegisterPara.invalid) {
             request.setAttribute("errorMessage", "WrongPassword");
             request.getRequestDispatcher("/shopLogin.jsp").forward(request, response);
-        } else if (result == StaticPara.sqlError) {
+        } else if (result == LoginRegisterPara.sqlError) {
             request.setAttribute("errorMessage", "SqlError");
             request.getRequestDispatcher("/404.jsp").forward(request, response);
         }
@@ -59,7 +60,7 @@ public class ShopLoginServlet extends HttpServlet {
      * @param response response to jsp
      * @throws ServletException servlet exception
      * @throws IOException      ioe exception
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
